@@ -1,6 +1,4 @@
-# FYS5429
-
-# Physics-Informed Neural Networks (PINNs) and Finite Element Method (FEM) Project
+# Physics-Informed Neural Networks (PINNs) and Finite Element Method (FEM) Project. (FYS5429)
 
 <p align="center">
   <img src="https://github.com/Odin107/FYS5429/raw/main/Project_1_and_2/figures/Diffusion/u_time.gif"  height="50%" width="50%">
