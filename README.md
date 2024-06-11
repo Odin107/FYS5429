@@ -1,5 +1,6 @@
 # FYS5429
-This repository contains the projects from the UiO course FYS-5429 Advanced machine learning and data analysis for the physical sciences
+
+# Physics-Informed Neural Networks (PINNs) and Finite Element Method (FEM) Project
 
 <p align="center">
   <img src="https://github.com/Odin107/FYS5429/raw/main/Project_1_and_2/figures/Diffusion/u_time.gif"  height="50%" width="50%">
@@ -7,9 +8,8 @@ This repository contains the projects from the UiO course FYS-5429 Advanced mach
   <b>Diffusion of a gaussian hill</b>
 </p>
 
-# Physics-Informed Neural Networks (PINNs) and Finite Element Method (FEM) Project
-
 This project focuses on the implementation and experimentation with Physics-Informed Neural Networks (PINNs) and Finite Element Method for solving differential equations related to fluid dynamics and heat diffusion. The project is divided into two main directories, Navier-Stokes and Diffusion, each targeting a specific set of problems within the domain of physics-informed learning.
+
 
 ## Navier-Stokes
 
