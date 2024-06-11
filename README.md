@@ -61,10 +61,10 @@ Both parts of the project utilize PyTorch for defining and training the neural n
 
 ### Prerequisites
 
- - Python 3.x
- - PyTorch
- - NumPy
- - Matplotlib
+ - Python 3.11.8
+ - PyTorch 2.2.1+cu121
+ - NumPy 1.26.4
+ - Matplotlib 3.8.4
    
 ### Installation
 
