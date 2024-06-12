@@ -13,6 +13,7 @@ This project focuses on the implementation and experimentation with Physics-Info
 
 The `PINNs_NS` directory contains code and resources for implementing PINNs to solve the Navier-Stokes equations, which describe the motion of viscous fluid substances. This part of the project explores the application of PINNs to fluid dynamics problems, aiming to model and predict fluid behavior under various conditions.
 
+
 ### Key Components:
 
 - `PINNs_NS.py`: Main script for defining and training the PINN model for Navier-Stokes equations.
