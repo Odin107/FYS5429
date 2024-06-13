@@ -1,4 +1,4 @@
-# Physics-Informed Neural Networks (PINNs) and Finite Element Method (FEM) Project. (FYS5429)
+# Going with the Flow: A Comparative Study of Physics-Informed Neural Networks and FEM for Diffusion and Navier-Stokes Equations in Poiseuille Flow. (FYS5429)
 
 <p align="center">
   <img src="https://github.com/Odin107/FYS5429/raw/main/Project_1_and_2/figures/Diffusion/u_time_gauss.gif"  height="50%" width="50%">
@@ -73,4 +73,49 @@ conda create -n fenicsx-env
 conda activate fenicsx-env
 conda install -c conda-forge fenics-dolfinx mpich pyvista
 ```
+
+### Setting Up Jupyter Notebook with Docker
+
+To set up a Jupyter Notebook environment using Docker for running the PhenicsX code, follow these steps:
+
+1. **Install Docker**: Ensure Docker is installed on your system. You can download and install Docker from [here](https://www.docker.com/get-started).
+
+2. **Create a Dockerfile**: Create a `Dockerfile` with the necessary configurations to set up the environment.
+
+    ```Dockerfile
+    # Use the official FEniCSx Docker image
+    FROM dolfinx/dolfinx:stable
+
+    # Install additional dependencies
+    RUN pip install notebook torch numpy matplotlib
+
+    # Set up working directory
+    WORKDIR /home/fenicsx
+
+    # Copy project files into the container
+    COPY . /home/fenicsx
+
+    # Expose port for Jupyter Notebook
+    EXPOSE 8888
+
+    # Start Jupyter Notebook
+    CMD ["jupyter", "notebook", "--ip=0.0.0.0", "--port=8888", "--no-browser", "--allow-root"]
+    ```
+
+3. **Build the Docker Image**: Navigate to the directory containing the `Dockerfile` and build the Docker image.
+
+    ```bash
+    docker build -t fenicsx-notebook .
+    ```
+
+4. **Run the Docker Container**: Start a Docker container with the built image.
+
+    ```bash
+    docker run -p 8888:8888 fenicsx-notebook
+    ```
+
+5. **Access Jupyter Notebook**: Open your web browser and navigate to `http://localhost:8888`. Use the token provided in the terminal to access the Jupyter Notebook.
+
+This setup ensures a consistent environment for running the PhenicsX code, leveraging Docker to manage dependencies and environment configurations.
+
 
