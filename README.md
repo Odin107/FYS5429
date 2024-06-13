@@ -116,6 +116,6 @@ To set up a Jupyter Notebook environment using Docker for running the PhenicsX c
 
 5. **Access Jupyter Notebook**: Open your web browser and navigate to `http://localhost:8888`. Use the token provided in the terminal to access the Jupyter Notebook.
 
-This setup ensures a consistent environment for running the PhenicsX code, leveraging Docker to manage dependencies and environment configurations.
+This is the setup used for this project as it ensures a consistent environment for running the PhenicsX code, leveraging Docker to manage dependencies and environment configurations.
 
 
