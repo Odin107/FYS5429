@@ -36,9 +36,16 @@ The `Diffusion` directory focuses on the application of PINNs to solve the diffu
 ### Key Components:
 
  - `PINNs_heat.py`: Core script for defining, training, and evaluating the PINN model tailored for heat diffusion problems.
+ - `Leaky_relu.py`: Core script for defining, training, and evaluating the PINN model tailored for heat diffusion problems with the Leaky ReLU activation function.
+ - `SiLU.py`: Core script for defining, training, and evaluating the PINN model tailored for heat diffusion problems with the SiLU activation function.
+ - `Tanh.py`: Core script for defining, training, and evaluating the PINN model tailored for heat diffusion problems with the Tanh activation function.
+ - `Sigmoid.py`: Core script for defining, training, and evaluating the PINN model tailored for heat diffusion problems with the Sigmoid activation function.
  - `anal_anim.py`: Script for generating animations from the analytical solutions.
  - `FEM_heat.py`: Finite Element Method (FEM) implementation for heat diffusion.
 
+
+#### Note!
+The files for the different activation functions are exactly the same and could easily have been made into one file, as done for the Navier-Stokes model. However, these could be run sequentially from the terminal.
 
 ### Usage
 
@@ -47,6 +54,13 @@ To run the heat diffusion PINN model:
 ```bash
 python Path/to/python/file
 ```
+
+To run files sequentially:
+
+```bash
+python Path/to/python/file && python Path/To/Next/Python/File && ...
+```
+
 
 ## General Information
 
