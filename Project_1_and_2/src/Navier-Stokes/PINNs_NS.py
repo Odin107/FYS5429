@@ -32,7 +32,7 @@ def seed_everything(seed=42):
 seed_everything(42)
 
 # Create a directory to store the figures
-figures_dir = "PINNs_NS/figures"
+figures_dir = "figures"
 os.makedirs(figures_dir, exist_ok=True)
 
 
@@ -154,7 +154,9 @@ U_max = 1.0  # Maximum velocity at the center of the channel
 H = 1.0  # Height of the channel, set to 1 as the domain is normalized
 
 
-def boundary_conditions(model, x, y):
+
+
+def boundary_conditions(model, x, y, tol=1e-5):
     """
     Define the boundary conditions for the Physics-Informed Neural Network (PINN).
 
@@ -185,20 +187,29 @@ def boundary_conditions(model, x, y):
     u_v_p = model(torch.cat([x, y, torch.zeros_like(x)], dim=1))
     u, v, p = u_v_p[:, 0:1], u_v_p[:, 1:2], u_v_p[:, 2:3]
 
-    # Inlet (x = 0)
+    # Inlet (x = 0) on the left wall at x = 0 from y=0 to y=1
     u_inlet = 4 * U_max * (y * (H - y) / H**2)
-    bc_inlet = u - u_inlet
+    mask_inlet = torch.isclose(x, torch.tensor(0.0), atol=tol)
+    bc_inlet = (u - u_inlet) * mask_inlet.float()
 
-    # Outlet (x = 1)
-    
+    # Pressure at Inlet (x = 0), this should be on the left wall at x = 0 from y=0 to y=1
+    p_inlet = 8 * torch.ones_like(p)
+    bc_pressure_inlet = (p - p_inlet) * mask_inlet.float()
+
+    # Outlet (x = 1), this also needs to be the entire right wall at x = 1 and y from 0 to 1
+    mask_outlet = torch.isclose(x, torch.tensor(1.0), atol=tol)
     p_outlet = torch.zeros_like(p)
-   
-    bc_outlet = p - p_outlet
+    bc_outlet = (p - p_outlet) * mask_outlet.float()
 
     # Walls (y = 0 and y = H)
-    bc_walls = torch.cat([u, v], dim=1)
+    mask_bottom_wall = torch.isclose(y, torch.tensor(0.0), atol=tol)
+    mask_top_wall = torch.isclose(y, torch.tensor(H), atol=tol)
+    mask_walls = mask_bottom_wall | mask_top_wall
+    bc_walls = torch.cat([u * mask_walls.float(), v * mask_walls.float()], dim=1)
 
-    return bc_inlet, bc_outlet, bc_walls
+    return bc_inlet, bc_outlet, bc_walls, bc_pressure_inlet
+
+
 
 
 def initial_conditions(model, x, y):
@@ -227,11 +238,13 @@ def initial_conditions(model, x, y):
     t = torch.zeros_like(x)
     u_v_p = model(torch.cat([x, y, t], dim=1))
     u, v, p = u_v_p[:, 0:1], u_v_p[:, 1:2], u_v_p[:, 2:3]  # Make sure to split correctly
-    
-    return u-0, v-0, p-0  # Return as separate tensors
+    mask_inlet = (x == 0)
+    p_inlet = 8 * torch.ones_like(p)
+    bc_pressure_inlet = (p - p_inlet) * mask_inlet.float()
+    return u, v, bc_pressure_inlet # Return as separate tensors
 
 
-def train_step(X_left, X_right, X_top, X_bottom, X_collocation, X_ic, optimizer, model, pde, max_grad_norm=1.0):
+def train_step(X_left, X_right, X_top, X_bottom, X_collocation, X_ic, optimizer, model, pde, max_grad_norm=5.0):
     """
     Perform a single training step for the Physics-Informed Neural Network (PINN).
 
@@ -276,22 +289,22 @@ def train_step(X_left, X_right, X_top, X_bottom, X_collocation, X_ic, optimizer,
 
     X_left[:, 0:1].requires_grad_(True)
     X_left[:, 1:2].requires_grad_(True)
-    bc_inlet, _, bc_walls_left = boundary_conditions(model, X_left[:, 0:1], X_left[:, 1:2])
-    BC_left_loss = torch.mean(torch.square(bc_inlet)) + torch.mean(torch.square(bc_walls_left))
+    bc_inlet, _, bc_walls_left,  bc_pressure_inlet = boundary_conditions(model, X_left[:, 0:1], X_left[:, 1:2])
+    BC_left_loss = torch.mean(torch.square(bc_inlet)) + torch.mean(torch.square(bc_walls_left)) + torch.mean(torch.square(bc_pressure_inlet))
 
     X_right[:, 0:1].requires_grad_(True)
     X_right[:, 1:2].requires_grad_(True)
-    _, bc_outlet, bc_walls_right = boundary_conditions(model, X_right[:, 0:1], X_right[:, 1:2])
+    _, bc_outlet, bc_walls_right, _ = boundary_conditions(model, X_right[:, 0:1], X_right[:, 1:2])
     BC_right_loss = torch.mean(torch.square(bc_outlet)) + torch.mean(torch.square(bc_walls_right))
 
     X_top[:, 0:1].requires_grad_(True)
     X_top[:, 1:2].requires_grad_(True)
-    _, _, bc_walls_top = boundary_conditions(model, X_top[:, 0:1], X_top[:, 1:2])
+    _, _, bc_walls_top, _ = boundary_conditions(model, X_top[:, 0:1], X_top[:, 1:2])
     BC_top_loss = torch.mean(torch.square(bc_walls_top))
 
     X_bottom[:, 0:1].requires_grad_(True)
     X_bottom[:, 1:2].requires_grad_(True)
-    _, _, bc_walls_bottom = boundary_conditions(model, X_bottom[:, 0:1], X_bottom[:, 1:2])
+    _, _, bc_walls_bottom, _ = boundary_conditions(model, X_bottom[:, 0:1], X_bottom[:, 1:2])
     BC_bottom_loss = torch.mean(torch.square(bc_walls_bottom))
 
     f_u, f_v, f_c = pde(X_collocation, model)
@@ -311,8 +324,8 @@ print(device)
 
 
 # Parameters
-N_space = 20
-N_time = 20
+N_space = 30
+N_time = 30
 
 # Spatial and temporal points
 x_space = np.linspace(0, 1, N_space)
@@ -392,7 +405,7 @@ X_ic = X_ic[:min_size]
 dataset = TensorDataset(X_left, X_right, X_top, X_bottom, X_collocation, X_ic)
 
 # Create a DataLoader to load the data in batches
-data_loader = DataLoader(dataset, batch_size=64, shuffle=True)
+data_loader = DataLoader(dataset, batch_size=32, shuffle=True)
 
 # Define the activation functions to use
 activation_functions = {
@@ -413,8 +426,8 @@ for name, activation in activation_functions.items():
     
     # Initialize the model and optimizer for each activation function.
     model = PINN(num_inputs=3, num_layers=5, num_neurons=60, activation=activation, device=device)
-    optimizer = optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-4)
-    scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.96)
+    optimizer = optim.Adam(model.parameters(), lr=1e-4, weight_decay=1e-3)
+    scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.999)
 
     # Time the training process
     start_time = time.time()
@@ -444,6 +457,7 @@ for name, activation in activation_functions.items():
         epoch_list.append(epoch)  # Append the epoch number to the epoch list
 
         if epoch % 100 == 0:
+
             scheduler.step()  # Adjust the learning rate using the scheduler
             print(f'Epoch {epoch}, Total loss {average_loss:.4e}')  #
             print(f'PDE loss: {pde_loss:.4e}, IC loss: {IC_loss:.4e}, BC left loss: {BC_left_loss:.4e}, BC right loss: {BC_right_loss:.4e}, BC top loss: {BC_top_loss:.4e}, BC bottom loss: {BC_bottom_loss:.4e}')  # Print the individual losses
