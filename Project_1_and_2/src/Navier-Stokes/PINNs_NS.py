@@ -423,10 +423,6 @@ for name, activation in activation_functions.items():
     loss_list = []  # List to store the average loss at each epoch
     epoch_list = []  # List to store the epoch number
 
-    IC_weight = 1.0  # Weight for the initial condition loss
-    BC_right_left = 1.0  # Weight for the boundary condition loss
-    PDE_weight = 1.0  # Weight for the PDE loss
-
     print("Initial learning rate:", optimizer.param_groups[0]['lr'])  # Print the initial learning rate
 
     for epoch in range(epochs):
