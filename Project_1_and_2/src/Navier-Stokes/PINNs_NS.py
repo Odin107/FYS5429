@@ -419,7 +419,7 @@ for name, activation in activation_functions.items():
     # Time the training process
     start_time = time.time()
 
-    epochs = 30000  # Number of training epochs
+    epochs = 15000  # Number of training epochs
     loss_list = []  # List to store the average loss at each epoch
     epoch_list = []  # List to store the epoch number
 
@@ -439,7 +439,7 @@ for name, activation in activation_functions.items():
             # Perform a training step and get the individual losses and total loss for the epoch 
             BC_left_loss, BC_right_loss, BC_top_loss, BC_bottom_loss, pde_loss, IC_loss, loss_total = train_step(
                 X_left_batch, X_right_batch, X_top_batch, X_bottom_batch, X_collocation_batch, X_ic_batch, optimizer, model, pde,
-                max_grad_norm=1.0, IC_weight=IC_weight, BC_weight=BC_right_left, PDE_weight=PDE_weight)
+                max_grad_norm=1.0)
             
             total_loss += loss_total.item()  # Accumulate the total loss for the epoch
 
