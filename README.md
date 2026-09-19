@@ -1,4 +1,6 @@
-# Going with the Flow: A Comparative Study of Physics-Informed Neural Networks and FEM for Diffusion and Navier-Stokes Equations in Poiseuille Flow. (FYS5429)
+# PINNs vs. finite element methods
+
+**Diffusion and Poiseuille flow · FYS5429**
 
 <p align="center">
   <img src="https://github.com/Odin107/FYS5429/raw/main/Project_1_and_2/figures/Diffusion/u_time_gauss.gif"  height="50%" width="50%">
@@ -26,12 +28,12 @@ The `Navier-Stokes` directory contains code and resources for implementing PINNs
 To run the main Navier-Stokes PINN model:
 
 ```bash
-python Path/to/python/file
+python Project_1_and_2/src/Navier-Stokes/PINNs_NS.py
 ```
 
 ## PINNs_Diffusion
 
-The `Diffusion` directory focuses on the application of PINNs to solve the diffusion equation. This involves modeling the diffusion of a gaussian hill.
+The `Diffusion` directory focuses on the application of PINNs to solve the diffusion equation. This involves modeling the diffusion of a Gaussian hill.
 
 ### Key Components:
 
@@ -52,7 +54,7 @@ The files for the different activation functions are exactly the same and could 
 To run the heat diffusion PINN model:
 
 ```bash
-python Path/to/python/file
+python Project_1_and_2/src/Diffusion/PINNs_heat.py
 ```
 
 To run files sequentially:
@@ -64,7 +66,7 @@ python Path/to/python/file && python Path/To/Next/Python/File && ...
 
 ## General Information
 
-The first part of the project utilizes PyTorch for defining and training the neural network models. The secound uses PhenicsX and DolfinX. The models are designed to incorporate physical laws as part of their learning process, enabling them to make predictions that adhere to the underlying physics of the problem domain.
+The first part of the project utilizes PyTorch for defining and training the neural network models. The second uses FEniCSx and DOLFINx. The models are designed to incorporate physical laws as part of their learning process, enabling them to make predictions that adhere to the underlying physics of the problem domain.
 
 ### Prerequisites
 
@@ -72,8 +74,8 @@ The first part of the project utilizes PyTorch for defining and training the neu
  - PyTorch 2.2.1+cu121
  - NumPy 1.26.4
  - Matplotlib 3.8.4
- - DolfinX 0.8.0
- - PhenicsX 0.8.0
+ - DOLFINx 0.8.0
+ - FEniCSx 0.8.0
    
 ### Installation
 
@@ -90,7 +92,7 @@ conda install -c conda-forge fenics-dolfinx mpich pyvista
 
 ### Setting Up Jupyter Notebook with Docker
 
-To set up a Jupyter Notebook environment using Docker for running the PhenicsX code, follow these steps:
+To set up a Jupyter Notebook environment using Docker for running the FEniCSx code, follow these steps:
 
 1. **Install Docker**: Ensure Docker is installed on your system. You can download and install Docker from [here](https://www.docker.com/get-started).
 
@@ -130,6 +132,6 @@ To set up a Jupyter Notebook environment using Docker for running the PhenicsX c
 
 5. **Access Jupyter Notebook**: Open your web browser and navigate to `http://localhost:8888`. Use the token provided in the terminal to access the Jupyter Notebook.
 
-This is the setup used for this project as it ensures a consistent environment for running the PhenicsX code, leveraging Docker to manage dependencies and environment configurations.
+This is the setup used for this project as it ensures a consistent environment for running the FEniCSx code, leveraging Docker to manage dependencies and environment configurations.
 
 
